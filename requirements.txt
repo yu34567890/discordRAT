@@ -1,4 +1,10 @@
+webbrowser
+opencv-python
+keyboard
+getpass
 discord.py
+pynput
 pyautogui
 psutil
+platformdirs
 requests

