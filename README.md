@@ -10,4 +10,4 @@ then run pip install -r requirements.txt
 and run builder.rat wait few min 
 
 
-goto dist and you rat should there
+goto dist and you'r rat should there
