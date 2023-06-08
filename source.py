@@ -1168,7 +1168,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start('MTAzNTUyMjA2NjI0NzU5MDAxOA.GcmnhN.yl94Wy-TM5yZS94U0BCRpHDtpsH7KCfSDS-7hw'))
+loop.create_task(DisFunc.start('your bot token here'))
 
 try:
     loop.run_forever()
